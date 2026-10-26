@@ -5,6 +5,7 @@ import { ProtectedRoute } from './components/common/ProtectedRoute';
 import { DashboardLayout } from './components/layout/DashboardLayout';
 import { AdminRoute } from './components/admin/AdminRoute';
 import { AdminLayout } from './components/admin/AdminLayout';
+import { SupportChat } from './components/support/SupportChat';
 
 /* PUBLIC */
 import Home from './pages/public/Home';
@@ -49,7 +50,9 @@ export default function App() {
       <AuthProvider>
         <BrowserRouter>
           <Routes>
-            {/* PUBLIC */}
+            {/* ==================================================
+                PUBLIC ROUTES
+                ================================================== */}
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
@@ -58,7 +61,9 @@ export default function App() {
             <Route path="/terms" element={<Terms />} />
             <Route path="/privacy" element={<Privacy />} />
 
-            {/* USER PANEL */}
+            {/* ==================================================
+                USER PANEL
+                ================================================== */}
             <Route
               path="/dashboard"
               element={
@@ -69,11 +74,14 @@ export default function App() {
             >
               <Route index element={<Dashboard />} />
               <Route path="customize" element={<Customize />} />
+
+              {/* Legacy redirects */}
               <Route path="profile" element={<Navigate to="/dashboard/customize" replace />} />
               <Route path="appearance" element={<Navigate to="/dashboard/customize" replace />} />
               <Route path="music" element={<Navigate to="/dashboard/customize" replace />} />
               <Route path="socials" element={<Navigate to="/dashboard/customize" replace />} />
               <Route path="widgets" element={<Navigate to="/dashboard/customize" replace />} />
+
               <Route path="links" element={<Links />} />
               <Route path="badges" element={<Badges />} />
               <Route path="verification" element={<Verification />} />
@@ -84,7 +92,9 @@ export default function App() {
               <Route path="settings" element={<Settings />} />
             </Route>
 
-            {/* ADMIN PANEL */}
+            {/* ==================================================
+                ADMIN PANEL
+                ================================================== */}
             <Route
               path="/admin"
               element={
@@ -107,9 +117,18 @@ export default function App() {
               <Route path="logs" element={<AdminLogs />} />
             </Route>
 
+            {/* ==================================================
+                DYNAMIC + 404
+                ================================================== */}
             <Route path="/u/:username" element={<ProfileView />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
+
+          {/* ==================================================
+              AI SUPPORT CHAT — Global floating widget
+              Appears on every page
+              ================================================== */}
+          <SupportChat />
         </BrowserRouter>
       </AuthProvider>
     </ToastProvider>

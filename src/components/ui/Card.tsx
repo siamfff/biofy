@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { cn } from '../../utils/cn';
-
+ 
 interface Props {
   title?: string;
   description?: string;
@@ -10,7 +10,7 @@ interface Props {
   glass?: boolean;
   noPadding?: boolean;
 }
-
+ 
 export function Card({
   title,
   description,
@@ -23,9 +23,9 @@ export function Card({
   return (
     <div
       className={cn(
-        'rounded-2xl border border-border transition-colors',
-        glass ? 'bg-bg-card/80 backdrop-blur-xl' : 'bg-bg-card',
-        'hover:border-border-strong',
+        'rounded-2xl border border-border transition-all duration-200',
+        glass ? 'bg-bg-card/70 backdrop-blur-xl' : 'bg-bg-card',
+        'hover:border-brand/40 hover:shadow-[0_0_40px_-16px_rgba(168,85,247,0.5)]',
         noPadding ? '' : 'p-5',
         className,
       )}
@@ -45,3 +45,4 @@ export function Card({
     </div>
   );
 }
+ 

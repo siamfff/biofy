@@ -1,63 +1,38 @@
-import { useState } from 'react';
-import {
-  uploadAvatar,
-  uploadBackground,
-  uploadAudio,
-} from '../services/storageService';
-import { uploadVideoBackground } from '../utils/videoUpload';
-import { useAuth } from './useAuth';
+import { useCallback } from 'react';
 
-type Kind = 'avatar' | 'background' | 'audio' | 'video';
+const CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+const UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
 
 export function useMediaUpload() {
-  const { profile } = useAuth();
-  const [uploading, setUploading] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [error, setError] = useState<string | null>(null);
+  const upload = useCallback(async (type: 'avatar' | 'background' | 'video' | 'music', uid: string, file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', UPLOAD_PRESET);
+    
+    // ফোল্ডার তৈরি করা
+    const folder = `nebula/${uid}/${type}`;
+    formData.append('folder', folder);
 
-  const upload = async (
-    kind: Kind,
-    uid: string,
-    file: File,
-  ): Promise<string | null> => {
-    if (!file) {
-      setError('No file selected');
-      return null;
+    const resourceType = type === 'video' || file.type.startsWith('video') ? 'video' : 'image';
+    const url = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/${resourceType}/upload`;
+
+    const response = await fetch(url, {
+      method: 'POST',
+      body: formData,
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error?.message || 'Upload failed');
     }
-    setUploading(true);
-    setProgress(0);
-    setError(null);
 
-    try {
-      let url: string;
-      const isPremium = profile?.premium === true;
+    // 💡 URL এবং public_id দুটোই রিটার্ন করা হচ্ছে
+    return {
+      url: data.secure_url,
+      publicId: data.public_id,
+    };
+  }, []);
 
-      if (kind === 'avatar') {
-        url = await uploadAvatar(uid, file);
-      } else if (kind === 'background') {
-        url = await uploadBackground(uid, file);
-      } else if (kind === 'audio') {
-        url = await uploadAudio(uid, file);
-      } else {
-        url = await uploadVideoBackground(
-          uid,
-          file,
-          isPremium,
-          (p) => setProgress(p),
-        );
-      }
-
-      setProgress(100);
-      return url;
-    } catch (e: any) {
-      const msg = e?.message || 'Upload failed';
-      setError(msg);
-      console.error('[useMediaUpload]', kind, msg);
-      return null;
-    } finally {
-      setUploading(false);
-    }
-  };
-
-  return { upload, uploading, progress, error, setError };
+  return { upload };
 }

@@ -32,7 +32,7 @@ import {
 
 type TabId = 'account' | 'security' | 'privacy' | 'sessions' | 'danger';
 
-export default function Settings() {
+export default function Settings() { // 👈 এখানে export default আছে
   const { user, profile, refreshProfile } = useAuth();
   const navigate = useNavigate();
   const toast = useToast();
@@ -161,7 +161,7 @@ export default function Settings() {
     }
   };
 
-  // ------------- Delete account -------------
+  // ------------- Delete account (ক্লাউডিনারি ডিলিটসহ) -------------
   const handleDeleteAccount = async () => {
     if (!user || !profile) return;
     if (deleteConfirm !== profile.username) {
@@ -170,6 +170,24 @@ export default function Settings() {
     }
     setDeleting(true);
     try {
+      // 👇 ক্লাউডিনারি থেকে অ্যাভাটার ও ব্যাকগ্রাউন্ড ডিলিট
+      const deleteCloudinary = async (pid: string | undefined, type: 'image'|'video') => {
+        if(!pid) return;
+        await fetch('/api/cloudinary/delete', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ publicId: pid, resourceType: type })
+        });
+      };
+
+      const mediaProfile = profile as typeof profile & {
+        avatarPublicId?: string;
+        backgroundPublicId?: string;
+      };
+      if (mediaProfile.avatarPublicId) await deleteCloudinary(mediaProfile.avatarPublicId, 'image');
+      if (mediaProfile.backgroundPublicId) await deleteCloudinary(mediaProfile.backgroundPublicId, 'image');
+
+      // ফায়ারবেস অ্যাকাউন্ট ডিলিট
       await deleteUserAccount(user.uid);
       await logoutUser();
       toast.success('Account deleted');

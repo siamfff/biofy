@@ -1,9 +1,9 @@
 import { ButtonHTMLAttributes, ReactNode } from 'react';
 import { cn } from '../../utils/cn';
-
+ 
 type Variant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'outline';
 type Size = 'sm' | 'md' | 'lg';
-
+ 
 interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: Variant;
   size?: Size;
@@ -11,7 +11,7 @@ interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
   fullWidth?: boolean;
 }
-
+ 
 export function Button({
   variant = 'primary',
   size = 'md',
@@ -25,20 +25,20 @@ export function Button({
   const base =
     'inline-flex items-center justify-center gap-2 font-medium rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-brand/40 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]';
   const sizes: Record<Size, string> = {
-    sm: 'text-xs px-3 py-1.5',
+    sm: 'text-xs px-3.5 py-1.5',
     md: 'text-sm px-4 py-2.5',
     lg: 'text-base px-6 py-3',
   };
   const variants: Record<Variant, string> = {
     primary:
-      'bg-gradient-brand text-white shadow-glow hover:shadow-glow-purple hover:brightness-110',
+      'bg-gradient-brand text-white border border-brand/60 shadow-glow hover:shadow-glow-purple hover:brightness-110',
     secondary:
-      'bg-bg-card text-white border border-border hover:bg-bg-elevated hover:border-border-strong',
-    ghost: 'text-muted hover:bg-bg-card hover:text-white',
+      'bg-bg-card/80 text-white border border-border hover:bg-bg-elevated hover:border-brand/50',
+    ghost: 'text-muted hover:bg-white/5 hover:text-white',
     danger:
       'bg-danger text-white hover:brightness-110 shadow-[0_0_30px_-8px_rgba(239,68,68,0.6)]',
     outline:
-      'bg-transparent text-white border border-border-strong hover:bg-bg-card hover:border-brand/50',
+      'bg-transparent text-white border border-border-strong hover:bg-brand/10 hover:border-brand/60',
   };
   return (
     <button
